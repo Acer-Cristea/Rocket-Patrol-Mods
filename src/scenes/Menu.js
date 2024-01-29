@@ -7,7 +7,14 @@ class Menu extends Phaser.Scene {
       // load images/tile sprites
       this.load.audio("sfx-select", "./assets/sfx-select.wav")
       this.load.audio("sfx-shot", "./assets/sfx-shot.wav")
-      this.load.audio("sfx-explosion", "./assets/sfx-explosion.wav")
+      //this.load.audio("sfx-explosion", "./assets/sfx-explosion.wav")
+
+      this.load.audio("explosion1", "./assets/explosion1.wav")
+      this.load.audio("explosion2", "./assets/explosion2.wav")
+      this.load.audio("explosion3", "./assets/explosion3.wav")
+      this.load.audio("explosion4", "./assets/explosion4.wav")
+
+      this.load.image("spaceship2", "./assets/myship.png")
       this.load.image("rocket", "./assets/rocket.png")
       this.load.image("spaceship", "./assets/spaceship.png")
       this.load.image("starfield", "./assets/starfield.png")
@@ -77,7 +84,7 @@ class Menu extends Phaser.Scene {
         //hard mode
         game.settings = {
           spaceshipSpeed: 4,
-          gameTimer: 45000
+          gameTimer: 5000
         }
         this.sound.play("sfx-select")
         this.scene.start("playScene")

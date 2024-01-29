@@ -3,7 +3,17 @@ class Play extends Phaser.Scene {
       super("playScene")
     }
     
+    preload() {
+      //adding copyright free background music
+      this.load.audio('backgroundMusic', './assets/lady-of-the-80s.mp3'); 
+
+    }
+
+
     create() {
+
+      //tracking time for speed boost
+      this.startTime = this.time.now
 
       this.starfield = this.add.tileSprite(0,0,640,480,"starfield").setOrigin(0,0)
       // green UI background
@@ -18,11 +28,20 @@ class Play extends Phaser.Scene {
       this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, "spaceship", 0, 30).setOrigin(0, 0)
       this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, "spaceship", 0, 20).setOrigin(0,0)
       this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, "spaceship", 0, 10).setOrigin(0,0)
+      this.ship04 = new Spaceship(this, game.config.width, borderUISize*2 + borderPadding*4, "spaceship2",0,40).setOrigin(0,0)
+
+      this.ship04.moveSpeed += 1
 
       keyFIRE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
       keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
       keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
       keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
+
+      this.backgroundMusic = this.sound.add('backgroundMusic', { volume: 0.2, loop: true });
+      this.backgroundMusic.play();
+
+
+      this.timeLeft = game.settings.gameTimer / 1000; // Convert milliseconds to seconds      
 
       //keep track of score
       this.p1Score = 0
@@ -43,6 +62,40 @@ class Play extends Phaser.Scene {
 
       this.gameOver = false
 
+
+      let highScoreConfig = {
+        fontFamily: "Courier",
+        fontSize: "28px",
+        backgroundColor: "#F3B141",
+        color: "#843605",
+        align: "right",
+        padding: {
+          top: 5,
+          bottom: 5,
+        },
+        fixedWidth: 100      
+      }
+      
+      this.highScoreText = this.add.text(game.config.width - borderUISize - borderPadding, borderUISize + borderPadding * 2, "HS: " + highScore, highScoreConfig).setOrigin(1,0)
+
+
+      let fireTextConfig = {
+        fontFamily: "Courier",
+        fontSize: "28px",
+        backgroundColor: "#F3B141",
+        color: "#843605",
+        align: "right",
+        padding: {
+          top: 5,
+          bottom: 5,
+        },
+        fixedWidth: 75     
+      }
+      
+      this.fireText = this.add.text(game.config.width/2 + borderUISize + borderPadding, borderUISize + borderPadding *2, "FIRE", fireTextConfig).setOrigin(1,0)
+
+
+
       scoreConfig.fixedWidth = 0
       this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
         this.add.text(game.config.width/2, game.config.height/2, "GAME OVER", scoreConfig).setOrigin(0.5)
@@ -51,15 +104,45 @@ class Play extends Phaser.Scene {
       }, null, this)
 
 
+
+      this.timeLeftText = this.add.text(game.config.width/2 - borderUISize - borderPadding, borderUISize + borderPadding * 2, this.timeLeft, scoreConfig).setOrigin(1, 0)
+
+
+
     }
 
     update() {
 
+
+      if (!this.gameOver) {
+        this.timeLeft = Math.max(0, (game.settings.gameTimer - (this.time.now - this.startTime)) / 1000);
+        this.timeLeftText.text = this.timeLeft.toFixed(1);
+    }
+
+      const elapsedTime = this.time.now - this.startTime
+
+      if (this.p1Score > highScore) {
+        highScore = this.p1Score
+        this.highScoreText.text = 'HS: ' + highScore
+      }
+
+      if (elapsedTime >= 5000 && elapsedTime < 5025) {
+        // Increase spaceship speed after 30 seconds
+        // or 
+        this.ship01.moveSpeed += 1
+        this.ship02.moveSpeed += 1
+        this.ship03.moveSpeed += 1
+        this.ship04.moveSpeed += 1
+        console.log("space speed: ", this.ship01.moveSpeed)
+    }
+
       if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyRESET)){
+        this.backgroundMusic.stop();
         this.scene.restart()
       }
 
       if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+        this.backgroundMusic.stop();
         this.scene.start("menuScene")
       }
 
@@ -69,9 +152,15 @@ class Play extends Phaser.Scene {
         this.ship01.update()
         this.ship02.update()
         this.ship03.update()
+        this.ship04.update()
       }
 
       // check collisions
+      if (this.checkCollision(this.p1Rocket, this.ship04)) {
+        this.p1Rocket.reset()
+        this.shipExplode(this.ship04)
+      }
+
       if(this.checkCollision(this.p1Rocket, this.ship03)) {
         this.p1Rocket.reset()
         this.shipExplode(this.ship03)
@@ -86,6 +175,8 @@ class Play extends Phaser.Scene {
       }
     }
 
+
+
     checkCollision(rocket, ship) {
       // simple AABB checking
       if (rocket.x < ship.x + ship.width && 
@@ -98,9 +189,13 @@ class Play extends Phaser.Scene {
       }
     }
 
+
+
     shipExplode(ship) {
       // temporarily hide ship
       ship.alpha = 0
+      //hide fire
+      this.fireText.visible = false;
       // create explosion sprite at ship's position
       let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0, 0);
       boom.anims.play('explode')             // play explode animation
@@ -108,11 +203,27 @@ class Play extends Phaser.Scene {
         ship.reset()                         // reset ship position
         ship.alpha = 1                       // make ship visible again
         boom.destroy()                       // remove explosion sprite
+
+        setTimeout(() => {
+          this.fireText.visible = true
+      }, 10)
+
       })
       
+
       this.p1Score += ship.points
       this.scoreLeft.text = this.p1Score
-      this.sound.play("sfx-explosion")
+
+      let explosionSounds = ["explosion1", "explosion2", "explosion3", "explosion4"]
+
+      let randomIndex = Math.floor(Math.random()*4)
+      let randomExplosion = explosionSounds[randomIndex]
+
+      this.sound.play(randomExplosion)
+
+
     }
+
+
   
 }
