@@ -81,10 +81,10 @@ class Play extends Phaser.Scene {
           top: 5,
           bottom: 5,
         },
-        fixedWidth: 100      
+        fixedWidth: 125      
       }
       
-      this.highScoreText = this.add.text(game.config.width - borderUISize - borderPadding, borderUISize + borderPadding * 2, "HS: " + highScore, highScoreConfig).setOrigin(1,0)
+      this.highScoreText = this.add.text(game.config.width - borderUISize - borderPadding -30, borderUISize + borderPadding * 2, "HS: " + highScore, highScoreConfig).setOrigin(1,0)
 
 
       let fireTextConfig = {
