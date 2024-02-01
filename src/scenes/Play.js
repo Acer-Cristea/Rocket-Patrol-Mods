@@ -140,7 +140,7 @@ class Play extends Phaser.Scene {
         this.ship02.moveSpeed += 1
         this.ship03.moveSpeed += 1
         this.ship04.moveSpeed += 1
-        console.log("space speed: ", this.ship01.moveSpeed)
+        //console.log("space speed: ", this.ship01.moveSpeed)
     }
 
       if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyRESET)){
