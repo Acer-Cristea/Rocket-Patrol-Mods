@@ -134,7 +134,7 @@ class Play extends Phaser.Scene {
         this.highScoreText.text = 'HS: ' + highScore
       }
 
-      if (elapsedTime >= 30000 && elapsedTime < 30004) {
+      if (elapsedTime >= 30000 && elapsedTime < 30005) {
         // Increase spaceship speed after 30 seconds
         // or 
         this.ship01.moveSpeed += 1
