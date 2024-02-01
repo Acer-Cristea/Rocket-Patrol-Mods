@@ -18,6 +18,13 @@ class Menu extends Phaser.Scene {
       this.load.image("rocket", "./assets/rocket.png")
       this.load.image("spaceship", "./assets/spaceship.png")
       this.load.image("starfield", "./assets/starfield.png")
+      //adding parrallex scrolling, I'm just adding planets that move at different speeds to give a distance effect. I think this is parralex scrolling?
+      this.load.image("asteroid", "./assets/asteroid.png")
+      this.load.image("planet", "./assets/planet.png")
+
+      this.load.image("title", "./assets/title.png")
+      this.load.image("rocket_t", "./assets/rocket_t.png")
+
       this.load.spritesheet("explosion", "./assets/explosion.png", {
         frameWidth: 64,
         frameHeight: 32,
@@ -28,6 +35,7 @@ class Menu extends Phaser.Scene {
     
     create() {
 
+      this.rocket_t = this.add.tileSprite(0,50,640,480,"rocket_t").setOrigin(0,0)
       //animation configeration
       this.anims.create({
         key: "explode",
@@ -36,12 +44,10 @@ class Menu extends Phaser.Scene {
       })
       //this.add.text(20, 20, "Rocket Patrol Menu")
       //this.scene.start("playScene")
-
       let menuConfig = {
-        fontFamily: "Courier",
-        fontSize: "28px",
-        backgroundColor: "#F3B141",
-        color: "#843605",
+        fontFamily: "Comic Sans MS",
+        fontSize: "35px",
+        color: "#FFFFFF",
         align: "right",
         padding: {
           top: 5,
@@ -50,16 +56,13 @@ class Menu extends Phaser.Scene {
         fixedWidth: 0
       }
 
-      //displays menu text
-      this.add.text(game.config.width/2, game.config.height/2 - borderUISize - borderPadding, "ROCKET PATROL",
-      menuConfig).setOrigin(0.5)
-      this.add.text(game.config.width/2, game.config.height/2, "Use ←→ arrows to move & (F) to fire",
+
+      this.title = this.add.tileSprite(0,0,640,480,"title").setOrigin(0,0)
+
+      this.add.text(game.config.width/2, game.config.height/2+140, "Use ←→ arrows to move & (F) to fire",
       menuConfig).setOrigin(0.5)
 
-      menuConfig.backgroundColor = "#00FF00"
-      menuConfig.color = "#000"
-
-      this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPadding, "Press ← for Novice or → for Expert",
+      this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPadding+160, "Press ← for Novice or → for Expert",
       menuConfig).setOrigin(0.5)  
 
       keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
@@ -68,6 +71,9 @@ class Menu extends Phaser.Scene {
     }
 
     update() {
+
+      this.rocket_t.tilePositionX -= 2
+
       if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
         //console.log("pressed")
         //easy mode
@@ -84,7 +90,7 @@ class Menu extends Phaser.Scene {
         //hard mode
         game.settings = {
           spaceshipSpeed: 4,
-          gameTimer: 5000
+          gameTimer: 45000
         }
         this.sound.play("sfx-select")
         this.scene.start("playScene")

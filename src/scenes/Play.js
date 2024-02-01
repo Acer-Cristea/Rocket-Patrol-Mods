@@ -5,7 +5,7 @@ class Play extends Phaser.Scene {
     
     preload() {
       //adding copyright free background music
-      this.load.audio('backgroundMusic', './assets/lady-of-the-80s.mp3'); 
+      this.load.audio('backgroundMusic', './assets/lady-of-the-80s.mp3');       
 
     }
 
@@ -16,6 +16,13 @@ class Play extends Phaser.Scene {
       this.startTime = this.time.now
 
       this.starfield = this.add.tileSprite(0,0,640,480,"starfield").setOrigin(0,0)
+      this.planet = this.add.tileSprite(0,50,640,480,"planet").setOrigin(0,0)
+      this.asteroid = this.add.tileSprite(0,50,640,480,"asteroid").setOrigin(0,0)
+
+      this.starfield.setAlpha(0.6)
+      this.asteroid.setAlpha(0.6)
+
+      this.planet.setAlpha(0.5)
       // green UI background
       this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0, 0)
       // white borders
@@ -30,7 +37,8 @@ class Play extends Phaser.Scene {
       this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, "spaceship", 0, 10).setOrigin(0,0)
       this.ship04 = new Spaceship(this, game.config.width, borderUISize*2 + borderPadding*4, "spaceship2",0,40).setOrigin(0,0)
 
-      this.ship04.moveSpeed += 1
+      this.ship04.moveSpeed += 0.5
+      //console.log("new ship speed", this.ship04.moveSpeed)
 
       keyFIRE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
       keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
@@ -126,14 +134,14 @@ class Play extends Phaser.Scene {
         this.highScoreText.text = 'HS: ' + highScore
       }
 
-      if (elapsedTime >= 5000 && elapsedTime < 5025) {
+      if (elapsedTime >= 30000 && elapsedTime < 30004) {
         // Increase spaceship speed after 30 seconds
         // or 
-        this.ship01.moveSpeed += 1
-        this.ship02.moveSpeed += 1
-        this.ship03.moveSpeed += 1
-        this.ship04.moveSpeed += 1
-        console.log("space speed: ", this.ship01.moveSpeed)
+        this.ship01.moveSpeed += 0.5
+        this.ship02.moveSpeed += 0.5
+        this.ship03.moveSpeed += 0.5
+        this.ship04.moveSpeed += 0.5
+        //console.log("space speed: ", this.ship01.moveSpeed)
     }
 
       if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyRESET)){
@@ -146,7 +154,11 @@ class Play extends Phaser.Scene {
         this.scene.start("menuScene")
       }
 
-      this.starfield.tilePositionX -= 4
+      this.starfield.tilePositionX -= 5
+      this.asteroid.tilePositionX -= 1.5
+
+      this.planet.tilePositionX -= 0.1
+
       if (!this.gameOver) {
         this.p1Rocket.update()
         this.ship01.update()
