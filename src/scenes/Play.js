@@ -37,7 +37,7 @@ class Play extends Phaser.Scene {
       this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, "spaceship", 0, 10).setOrigin(0,0)
       this.ship04 = new Spaceship(this, game.config.width, borderUISize*2 + borderPadding*4, "spaceship2",0,40).setOrigin(0,0)
 
-      this.ship04.moveSpeed += 0.5
+      this.ship04.moveSpeed += 1
       //console.log("new ship speed", this.ship04.moveSpeed)
 
       keyFIRE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
@@ -137,10 +137,10 @@ class Play extends Phaser.Scene {
       if (elapsedTime >= 30000 && elapsedTime < 30004) {
         // Increase spaceship speed after 30 seconds
         // or 
-        this.ship01.moveSpeed += 0.5
-        this.ship02.moveSpeed += 0.5
-        this.ship03.moveSpeed += 0.5
-        this.ship04.moveSpeed += 0.5
+        this.ship01.moveSpeed += 1
+        this.ship02.moveSpeed += 1
+        this.ship03.moveSpeed += 1
+        this.ship04.moveSpeed += 1
         //console.log("space speed: ", this.ship01.moveSpeed)
     }
 
